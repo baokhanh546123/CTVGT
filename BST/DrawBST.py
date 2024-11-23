@@ -1,14 +1,10 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-
-# Định nghĩa lớp cho cây nhị phân
 class TreeNode:
     def __init__(self, value):
         self.value = value
         self.left = None
         self.right = None
-
-# Hàm thêm phần tử vào cây nhị phân tìm kiếm
 def insert(root, x):
     if root is None:
         return TreeNode(x)
@@ -17,14 +13,10 @@ def insert(root, x):
     elif x > root.value:
         root.right = insert(root.right, x)
     return root
-
-# Hàm tìm giá trị nhỏ nhất trong cây (dùng trong delete)
 def minvalue(root):
     while root.left is not None:
         root = root.left
     return root.value
-
-# Hàm xóa một phần tử trong cây nhị phân tìm kiếm
 def delete(root, x):
     if root is None:
         return root
@@ -33,22 +25,16 @@ def delete(root, x):
     elif x > root.value:
         root.right = delete(root.right, x)
     else:
-        # Trường hợp nút cần xóa có một hoặc không có con
         if root.left is None:
             return root.right
         elif root.right is None:
             return root.left
-        # Trường hợp nút cần xóa có cả hai con
         root.value = minvalue(root.right)
         root.right = delete(root.right, root.value)
     return root
-
-# Hàm vẽ cây nhị phân lên màn hình
 def draw_tree(root):
     # Khởi tạo một đồ thị không có hướng
     G = nx.DiGraph()
-
-    # Hàm đệ quy để thêm các nút và các cạnh vào đồ thị
     def add_edges(node, pos, x=0, y=0, layer=1):
         if node is not None:
             G.add_node(node.value, pos=(x, y))  # Thêm nút vào đồ thị
@@ -72,7 +58,6 @@ def draw_tree(root):
 
 
 if __name__ == '__main__':
-# Tạo cây với giá trị ban đầu
     root = TreeNode(19)  # Khởi tạo cây với giá trị 19
 
     # Thêm các phần tử vào cây
@@ -81,6 +66,7 @@ if __name__ == '__main__':
     root = insert(root, 25)
     root = insert(root, 5)
     root = insert(root, 15)
+    # Xóa các phần tử vào cây
     root = delete(root,10)
     # Vẽ cây
     draw_tree(root)
