@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .product-card {
+            transition: transform 0.3s ease-in-out;
+        }
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+        .product-image {
+            height: 2000px;
+            width: 100%;
+            object-fit: cover;
+        }
+        .card-img-top {
+            height: 500px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 90px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('home') }}">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ current_user.username }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('thongtin') }}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dangxuat') }}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('dangnhap') }}">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Product List</h1>
+
+        <!-- Search and Sort Form -->
+        <form method="POST" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Search by product name" value="{{ request.form.get('search', '') }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="sort_type" class="form-select">
+                        <option value="">Sort by...</option>
+                        <option value="price" {% if request.form.get('sort_type') == 'price' %}selected{% endif %}>Price</option>
+                        <option value="ram_rom" {% if request.form.get('sort_type') == 'ram_rom' %}selected{% endif %}>RAM & ROM</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="sort_order" class="form-select">
+                        <option value="asc" {% if request.form.get('sort_order') == 'asc' %}selected{% endif %}>Ascending</option>
+                        <option value="desc" {% if request.form.get('sort_order') == 'desc' %}selected{% endif %}>Descending</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Apply</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Back Button -->
+        {% if search_performed %}
+            <form method="GET" action="{{ url_for('page3') }}" class="mb-4">
+                <button type="submit" class="btn btn-secondary">Back to All Products</button>
+            </form>
+        {% endif %}
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Product List -->
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for product in products %}
+                <div class="col">
+                    <div class="card h-100 product-card">
+                        <img src="{{ product.image_url or '/placeholder.svg?height=200&width=300' }}" class="card-img-top product-image" alt="{{ product.nameProduct }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.nameProduct }}</h5>
+                            <p class="card-text">Price: {{ product.priceProduct }} VND</p>
+                            <p class="card-text">RAM: {{ product.RAM }} GB</p>
+                            <p class="card-text">ROM: {{ product.ROM }} GB</p>
+                            <p class="card-text">Color: {{ product.Color }}</p>
+                            <p class="card-text">Chip: {{ product.Chip }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <p>No products found.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('home') }}">&laquo;</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="{{ url_for('home') }}">1</a></li>
+                <li class="page-item"><a class="page-link" href="{{ url_for('page2') }}">2</a></li>
+                <li class="page-item active"><a class="page-link" href="{{ url_for('page3') }}">3</a></li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">&raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
