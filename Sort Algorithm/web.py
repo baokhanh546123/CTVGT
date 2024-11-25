@@ -94,17 +94,17 @@ def dangky():
         length = 10
         special_characters = ["@", "#", "$", "%", "!", "*", "&"]
 
-        # Check if password length is less than 10 characters
+        
         if len(password_user) < length:
             flash("Mật khẩu quá ngắn", "danger")
             return render_template("dangky.html")
 
-        # Check if password contains at least one special character
+        
         if not any(char in special_characters for char in password_user):
             flash("Mật khẩu cần có một ký tự đặc biệt", "danger")
             return render_template("dangky.html")
 
-        # Check if the username already exists
+        
         existing_user = login.query.filter_by(username=username).first()
         existing_email = login.query.filter_by(email=email).first()
 
@@ -113,7 +113,7 @@ def dangky():
             return render_template('dangky.html')
         secret_pass = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
         password_hash = pbkdf2_sha256.hash(password_user)
-        # Create new user and save to the database
+        
         new_user = login(
             first_name=first_name,
             last_name=last_name,
@@ -137,7 +137,7 @@ def dangnhap():
         username = request.form['username']
         password_user = request.form['password']
 
-        # Retrieve user from the database
+       
         user = login.query.filter_by(username=username).first()
 
         if user and pbkdf2_sha256.verify(password_user, user.password_hash):  # Compare with password_hash
@@ -154,19 +154,19 @@ def quenmatkhau():
         username = request.form['username']
         secret_pass = request.form['secret_pass']
 
-        # Tìm người dùng trong cơ sở dữ liệu theo tên đăng nhập
+        
         user = login.query.filter_by(username=username).first()
         
         if not user:
             flash("Tài khoản không tồn tại!", "danger")
             return redirect(url_for('quenmatkhau'))
 
-        # Kiểm tra mã bảo mật (secret_pass) có đúng không
+        
         if secret_pass != user.secret_pass:
             flash("Mã bảo mật không đúng!", "danger")
             return redirect(url_for('quenmatkhau'))  # Giữ lại ở trang quên mật khẩu
 
-        # Nếu mã bảo mật đúng, chuyển đến trang thay đổi mật khẩu
+        
         return redirect(url_for('doimatkhau'))
 
     return render_template('quenmatkhau.html')
@@ -179,23 +179,22 @@ def doimatkhau():
         new_password = request.form['new_password']
         confirm_password = request.form['confirm_password']
 
-        # Check if the current password matches the user's password
-        if not check_password_hash(current_user.password_hash, current_password):
+         if not check_password_hash(current_user.password_hash, current_password):
             flash("Mật khẩu cũ không chính xác!", "danger")
             return render_template('doimatkhau.html', user=current_user)
 
-        # Check if new password and confirm password match
+        
         if new_password != confirm_password:
             flash("Mật khẩu mới và xác nhận mật khẩu không trùng khớp!", "danger")
             return render_template('doimatkhau.html', user=current_user)
 
-        # Validate the new password
+        
         password_error = validate_password(new_password)
         if password_error:
             flash(password_error, "danger")
             return render_template('doimatkhau.html', user=current_user)
 
-        # Hash the new password and update it
+        
         current_user.password_hash = generate_password_hash(new_password)
         db.session.commit()
 
@@ -305,7 +304,7 @@ def page3():
         
         if search_query:
             search_performed = True
-            # Binary search implementation
+            # Binary search
             products.sort(key=lambda x: x.nameProduct.lower() if x.nameProduct else '')
             left, right = 0, len(products) - 1
             matching_products = []
@@ -365,7 +364,7 @@ def page3():
                         i = j = k = 0
                         while i < len(L) and j < len(R):
                             if reverse:
-                                # Sort by RAM, then by ROM (both in descending order)
+                                
                                 if L[i].RAM > R[j].RAM or (L[i].RAM == R[j].RAM and L[i].ROM > R[j].ROM):
                                     arr[k] = L[i]
                                     i += 1
@@ -373,7 +372,7 @@ def page3():
                                     arr[k] = R[j]
                                     j += 1
                             else:
-                                # Sort by RAM, then by ROM (both in ascending order)
+                                
                                 if L[i].RAM < R[j].RAM or (L[i].RAM == R[j].RAM and L[i].ROM < R[j].ROM):
                                     arr[k] = L[i]
                                     i += 1
